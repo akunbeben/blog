@@ -16,7 +16,7 @@ const siteMetadata = {
   linkedin: 'https://www.linkedin.com/in/akunbeben',
   upwork: 'https://www.upwork.com/freelancers/~018bab3e073f989ee8',
   locale: 'en-US',
-  // analytics: {
+  analytics: {
   //   // If you want to use an analytics provider you have to add it to the
   //   // content security policy in the `next.config.js` file.
   //   // supports Plausible, Simple Analytics, Umami, Posthog or Google Analytics.
@@ -34,7 +34,7 @@ const siteMetadata = {
   //   // googleAnalytics: {
   //   //   googleAnalyticsId: '', // e.g. G-XXXXXXX
   //   // },
-  // },
+  },
   // comments: {
   //   // If you want to use an analytics provider you have to add it to the
   //   // content security policy in the `next.config.js` file.
