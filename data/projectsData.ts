@@ -1,5 +1,11 @@
 const projectsData = [
   {
+    title: 'Personal site and Portfolio',
+    description: `Sharing my journey building a personalized portfolio site with Next.js and TailwindCSS. From a web developer's perspective, discover the challenges, growth, and creativity in crafting this digital representation.`,
+    imgSrc: '/static/images/personal.png',
+    href: 'https://akunbeben.vercel.app/blog/finally-building-my-portfolio-a-web-developer-journey',
+  },
+  {
     title: 'Futuca (Banjarmasin, Indonesia)',
     description: `Futuca: The New You's product aids seminar attendees by assessing abilities, interests & talents via a self-assessment quiz.
     Built using TailwindCSS, Alpine, Livewire, Laravel. It was very challanging to build dynamic forms of quiz with many different types of quiz.`,
