@@ -1,0 +1,159 @@
+---
+title: The way I think, to solve problem
+date: '2023-08-23 17:21:52'
+tags: ['debugging', 'problem solving']
+draft: false
+summary: Navigating Livewire v3 changes for debugging in Laravel using Laravel Debugbar became a puzzle. Event name shifts, method replacements, and inline view hiccups. My dive, solutions, and compatibility fix revealed! 🕵️‍♂️🚀
+---
+
+_Author_: Benny Rahmat
+
+_Subject_: Problem solving
+
+_Language_: English
+
+_Source_: [Github Issue](https://github.com/barryvdh/laravel-debugbar/issues/1435)
+
+# Context
+
+I was building my project using the latest version of Livewire which is v3. And in the development process, I often using tools to debug and to see what is actually happened on the Application itself using such as [Laravel-Debugbar](https://github.com/barryvdh/laravel-debugbar) from [Barry vd. Heuvel](https://github.com/barryvdh).
+
+I am sure most Laravel developer is also using this tool to debug their projects, this is quite big and very useful Open source tool in Laravel community.
+
+In the meantime, after Livewire v3 release. Something weird happened to this tool, it's no longer capture the Livewire http request as intended. Nothing errors thrown or warning. Just blank section on the bar.
+
+I was really need it's function, I tried to change some config in the project and it does nothing. So, this brings up my curiousity. I was like "Hmmm, everything is set and configured properly. But, why is this not capture anything from my Livewire component?".
+
+# Action
+
+So, I started to read the Livewire v3 documentation and diving to the source code. Comparing the codes between v2 and v3. The first thing that I found is, the Event class between v2 and v3 is different. In v2 it was [Event](https://github.com/livewire/livewire/blob/2.x/src/Event.php) and in v3 is [EventBus](https://github.com/livewire/livewire/blob/main/src/EventBus.php).
+
+Then, I also found that the class is dipatching different event name in the runtime. Laravel-Debugbar itself is listening to the event named `view:render` but now in v3 is `render`. This is the "AHA" moment, finally I got the reason why it was not capture anything.
+
+From this, I tried to hardcoded the event name on the LivewireCollector in Laravel-Debugbar, I renamed from `view:render` to `render`. And it throw an error exception, basically it says the callback class is not instance of `\Illuminate\Contracts\View\View`. Let's see the code below.
+
+```php
+//                  Previously 'view:render'
+//                👇🏻 renamed to 'render'   👇🏻 This callback thrown an error
+Livewire::listen('render', function (View $view) use ($request) {
+    /** @var \Livewire\Component $component */
+    $component = $view->getData()['_instance'];
+
+    // Create an unique name for each compoent
+    $key = $component->getName() . ' #' . $component->id;
+
+    $data = [
+        'data' => $component->getPublicPropertiesDefinedBySubClass(),
+    ];
+
+    if ($request->request->get('id') == $component->id) {
+        $data['oldData'] = $request->request->get('data');
+        $data['actionQueue'] = $request->request->get('actionQueue');
+    }
+
+    $data['name'] = $component->getName();
+    $data['view'] = $view->name();
+    $data['component'] = get_class($component);
+    $data['id'] = $component->id;
+
+    $this->data[$key] = $this->formatVar($data);
+});
+```
+[Source code](https://github.com/barryvdh/laravel-debugbar/blob/cf4554d1dd7805a6a737dcb0f620c80d36850108/src/DataCollector/LivewireCollector.php#L26-L48)
+
+The error is appeared because the `render` method is returning an instance of [Component](https://github.com/livewire/livewire/blob/main/src/Component.php). In the previous version, it was returning the instance of `\Illuminate\Contracts\View\View`. And then getting the instance like this `$view->getData()['_instance']`, it's no longer needed in v3 because the callback itself is already return the Component object.
+
+After that, I looked up the Component class to see whats change in the v3. Then, I found that property `$id` is no longer public, its now protected and have an getter methods for that which is `->id()` or `->getId()`.
+
+So, I used the getter method to replace the `$component->id` to `$component->getId()`. Looks like problem solved, right? Nope, it still thrown an error. But now, its for the data mutation in the collector `$component->getPublicPropertiesDefinedBySubClass()` this method is actually removed from the codebase, and now it's `->all()`. Then I updated it.
+
+Now, its throw different error. But, this time its only happen when the component is using inline view instead of single file view. So, I decided to remove the `$data['view'] = $view->name();`
+
+After modification, the code looks like this.
+
+```php
+Livewire::listen('render', function (Component $component) use ($request) {
+    // Create an unique name for each compoent
+    $key = $component->getName() . ' #' . $component->getId();
+
+    $data = [
+        'data' => $component->all(),
+    ];
+
+    if ($request->request->get('id') == $component->getId()) {
+        $data['oldData'] = $request->request->get('data');
+        $data['actionQueue'] = $request->request->get('actionQueue');
+    }
+
+    $data['name'] = $component->getName();
+    $data['component'] = get_class($component);
+    $data['id'] = $component->getId();
+
+    $this->data[$key] = $this->formatVar($data);
+});
+```
+[Source code](https://github.com/barryvdh/laravel-debugbar/blob/master/src/DataCollector/LivewireCollector.php#L51-L69)
+
+Voila ✨, it starts capturing all the Livewire http request and show the data.
+
+After figuring these things out, I started to think about backward compability. Because, I don't want to break older version users.
+
+Thinking about it for hours, I decided to write separate listener block in the same method of LivewireCollector class. Why? Because we know that the event name is totally different. By that, we don't need to do anything such like change config or something.
+
+Lastly, this how the final code looks like.
+
+```php
+public function __construct(Request $request)
+{
+    // Listen to Livewire views
+    Livewire::listen('view:render', function (View $view) use ($request) {
+        /** @var \Livewire\Component $component */
+        $component = $view->getData()['_instance'];
+
+        // Create an unique name for each compoent
+        $key = $component->getName() . ' #' . $component->id;
+
+        $data = [
+            'data' => $component->getPublicPropertiesDefinedBySubClass(),
+        ];
+
+        if ($request->request->get('id') == $component->id) {
+            $data['oldData'] = $request->request->get('data');
+            $data['actionQueue'] = $request->request->get('actionQueue');
+        }
+
+        $data['name'] = $component->getName();
+        $data['view'] = $view->name();
+        $data['component'] = get_class($component);
+        $data['id'] = $component->id;
+
+        $this->data[$key] = $this->formatVar($data);
+    });
+
+    Livewire::listen('render', function (Component $component) use ($request) {
+        // Create an unique name for each compoent
+        $key = $component->getName() . ' #' . $component->getId();
+
+        $data = [
+            'data' => $component->all(),
+        ];
+
+        if ($request->request->get('id') == $component->getId()) {
+            $data['oldData'] = $request->request->get('data');
+            $data['actionQueue'] = $request->request->get('actionQueue');
+        }
+
+        $data['name'] = $component->getName();
+        $data['component'] = get_class($component);
+        $data['id'] = $component->getId();
+
+        $this->data[$key] = $this->formatVar($data);
+    });
+}
+```
+
+# Conclusion
+
+In conclusion, my investigation into the compatibility issues between Livewire v3 and Laravel-Debugbar led me to adjust event listeners, adapt methods, and ensure backward compatibility, resulting in successful Livewire HTTP request capture for debugging purposes.
+
+Here you can see the [Issue](https://github.com/barryvdh/laravel-debugbar/issues/1435) and the [PR](https://github.com/barryvdh/laravel-debugbar/issues/1436).
