@@ -6,8 +6,8 @@ const siteMetadata = {
   description: 'Personal writing space, a place to share my thoughts.',
   language: 'en-us',
   theme: 'light', // system, dark or light
-  siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
-  siteRepo: 'https://github.com/timlrx/tailwind-nextjs-starter-blog',
+  siteUrl: 'https://akunbeben.vercel.app',
+  siteRepo: 'https://github.com/akunbeben/blog',
   siteLogo: '/static/images/logo.png',
   socialBanner: '/static/images/twitter-card.png',
   email: 'akunbeben@gmail.com',
