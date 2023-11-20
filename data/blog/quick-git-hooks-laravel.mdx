@@ -3,7 +3,7 @@ title: Quick Git Hooks Setup for Laravel
 date: '2023-11-20'
 tags: ['development', 'tools']
 draft: false
-summary: Navigating Livewire v3 changes for debugging in Laravel using Laravel Debugbar became a puzzle. Event name shifts, method replacements, and inline view hiccups. My dive, solutions, and compatibility fix revealed! 🕵️‍♂️🚀
+summary: Discover the simplicity of integrating Git Hooks in your Laravel or PHP projects! In just a few steps, copy hooks to your project, customize as needed, and effortlessly share a unified workflow with your team. Check out this quick guide to streamline collaboration and boost efficiency!
 ---
 
 _Author_: Benny Rahmat
@@ -12,47 +12,44 @@ _Language_: English
 
 ## Integrate Git Hooks without headache.
 
-We all know, [**Git Hooks**](https://git-scm.com/docs/githooks) are specific to each Git repository, and they are not automatically transferred when cloning a repository. This means that contributors need to be aware of and set up the hooks in their local repositories.
-Thats why a [**Git Hooks**](https://git-scm.com/docs/githooks) package are available in almost every package manager in every programming language.
+We all know that [**Git Hooks**](https://git-scm.com/docs/githooks) are specific to each Git repository and are not automatically transferred when cloning a repository. This means that contributors need to be aware of and set up the hooks in their local repositories. That's why a Git Hooks package is available in almost every package manager for every programming language.
 
-We can use [**Git Hooks**](https://git-scm.com/docs/githooks) package, to achieve this. But sometimes, many packages are pre-configured and have their own rules or way to do the things (of course we can customize that).
-Sometimes, it could be overkill if we only need to run hooks to fix code styling on every commit and we have all the pre-configured toolset that we actually don't really need it. It just feels like waste of resource, Right?
+We can use the [**Git Hooks**](https://git-scm.com/docs/githooks) package to achieve this. However, sometimes many packages are pre-configured and have their own rules or ways of doing things (of course, we can customize that). Besides that, it could be overkill if we only need to run hooks to fix code styling on every commit and have all the pre-configured toolsets that we actually don't really need. It just feels like a waste of resources, right?
 
-So, here I will show you to setup [**Git Hooks**](https://git-scm.com/docs/githooks) in our Laravel or many other PHP projects.
+So, here I will show you how to set up [**Git Hooks**](https://git-scm.com/docs/githooks) in our Laravel or many other PHP projects.
 
 <details>
-  <summary>Before going further, this step is **optional** you can skip it. Click to expand</summary>
+  <summary>Before going further, this step is **optional**; you can skip it. Click to expand</summary>
 
-If you are using VSCode as the editor, the `.git` folder are invisible by default. So, if you want to show the `.git` folder, you need to update your VSCode setting. Here is how:
-We can set from the `settings.json` like this code below
+    If you are using VSCode as the editor, the .git folder is invisible by default. So, if you want to show the .git folder, you need to update your VSCode settings. Here is how:
 
-```json
-{
-    ... Your other configuration
-    "files.exclude": {
-        "**/.git": false
-    },
-    ...
-}
-```
+    We can set it from the settings.json like this code below:
 
-Or, we can go to the VSCode Settings (UI)
+    ```json
+    {
+        ... Your other configuration
+        "files.exclude": {
+            "**/.git": false
+        },
+        ...
+    }
+    ```
 
-|                     Go to File -> Preferences -> Settings                      |                     And remove the `**/.git` from the list                      |
-| :----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
-| ![VSCode Menu Bar](/static/images/git-hooks/2023-11-20.jpeg 'VSCode Menu Bar') | ![VSCode Menu Bar](/static/images/git-hooks/2023-11-20-02.png 'VSCode Setting') |
+    Or, we can go to the VSCode Settings (UI)
+
+    |                     Go to File -> Preferences -> Settings                      |                     And remove the `**/.git` from the list                      |
+    | :----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
+    | ![VSCode Menu Bar](/static/images/git-hooks/2023-11-20.jpeg 'VSCode Menu Bar') | ![VSCode Menu Bar](/static/images/git-hooks/2023-11-20-02.png 'VSCode Setting') |
 
 </details>
 
 ---
 
-First, we can copy the binary files from the `.git/hooks` folder and paste it to our root folder.
-Now, we have hooks folder in our root project folder. It should be looks like this.
+First, we can copy the binary files from the .git/hooks folder and paste them into our root folder. Now, we have a hooks folder in our root project folder. It should look like this:
 
 ![Hooks file](/static/images/git-hooks/2023-11-20-03.jpeg 'Hooks file')
 
-After that, we can do some clean up to those files, remove that `.sample` extension. For example, I only use the `pre-commit` hooks. And we can start modify it.
-In my case, I use the `pre-commit` hooks that will call [Laravel Pint](https://laravel.com/docs/10.x/pint) to fix some code styling.
+After that, we can do some cleanup to those files, remove that `.sample` extension. For example, I only use the `pre-commit` hooks. And we can start modifying it. In my case, I use the `pre-commit` hooks that will call [Laravel Pint](https://laravel.com/docs/10.x/pint) to fix some code styling.
 
 ```bash
 #!/bin/sh
@@ -67,7 +64,7 @@ fi
 exit 0
 ```
 
-By default, our git are still looking for the hooks from the original hooks path `.git/hooks`. Now, we need to change current hooks path to our `./hooks` folder.
+By default, our git is still looking for the hooks from the original hooks path `.git/hooks`. Now, we need to change the current hooks path to our `./hooks` folder.
 
 To do that, we can run this command to change the hooks path.
 
@@ -75,7 +72,7 @@ To do that, we can run this command to change the hooks path.
 git config core.hooksPath hooks
 ```
 
-Now, git will read the hooks path from `./hooks` folder. But, it only happened in our machine. To make sure it can be shared and used seamlessly, we need to put this command somewhere. And, as far as I know, the right place to put this command is in the `composer.json` file on `post-autoload-dump` scripts section.
+Now, git will read the hooks path from the `./hooks` folder. But, it only happens on our machine. To make sure it can be shared and used seamlessly, we need to put this command somewhere. And, as far as I know, the right place to put this command is in the `composer.json` file in the post-autoload-dump scripts section.
 
 ```json
 {
@@ -100,8 +97,8 @@ Now, git will read the hooks path from `./hooks` folder. But, it only happened i
 }
 ```
 
-By that, we don't have to worry about the git hooks path. It will "automatically" changed to the `./hooks` folder. Our teammate would have the same hooks as we are.
+By doing that, we don't have to worry about the git hooks path. It will "automatically" change to the `./hooks` folder. Our teammate would have the same hooks as we do.
 
-We can actually do more than this example, this fix code style is just to demonstrate that git hooks integration is that easy.
+We can actually do more than this example; this fix code style is just to demonstrate that git hooks integration is that easy.
 
-So, I don't have to worry about my other teammate to have different code style, Laravel Pint along with my hooks would handle that.
+So, I don't have to worry about my other teammates having a different code style; Laravel Pint along with my hooks would handle that.
