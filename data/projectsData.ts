@@ -1,5 +1,11 @@
 const projectsData = [
   {
+    title: 'TableAds - tablesignage.com',
+    description: `Revamped the platform. Overall, TableAds is a comprehensive environment for businesses to display any promotional material, including voucher codes, promos, or interactive banners. Revamped using Laravel, Livewire, and Filament.`,
+    imgSrc: '/static/images/tablesignage.png',
+    href: 'https://tablesignage.com',
+  },
+  {
     title: 'Personal site and Portfolio',
     description: `Sharing my journey building a personalized portfolio site with Next.js and TailwindCSS. From a web developer's perspective, discover the challenges, growth, and creativity in crafting this digital representation.`,
     imgSrc: '/static/images/personal.png',
