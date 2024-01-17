@@ -1,0 +1,87 @@
+---
+title: 'Pentingnya Database Transaction'
+date: '2024-01-17 14:51:52'
+tags: ['development', 'database']
+draft: false
+summary: Pentingnya Database Transaction dalam Prorgramming: Biar Data Tetap Konsisten!
+---
+
+_Author_: Benny Rahmat
+
+_Subject_: Blog
+
+_Language_: Indonesia
+
+**Pentingnya Database Transaction dalam Prorgramming: Biar Data Tetap Konsisten!**
+
+Jadi, pas ngoding, kita suka lupa yang namanya 'database transaction' atau bahkan yang baru tau istilah ini. Ini penting banget lho, buat biar data kita tetap konsisten dan gak amburadul.
+
+**Kenapa Database Transaction Itu Penting?**
+
+Pakai database transaction, data dijamin tetap rapi dan yang pasti konsisten. Kalo ada satu aja yang gagal, gak ada yang bakal keubah. Gampangnya, semuanya berhasil atau gak ada yang berhasil sama sekali. Kalo ada beberapa operasi yang mesti dijalankan barengan, ini yang kita butuhin.
+
+Kalo ada kesalahan atau error di tengah-tengah, sistem otomatis bakal nge-'undo' semuanya. Balikin keadaan awalnya, kayak kita gak ngapa-ngapain.
+
+**Contoh Implementasi di Laravel Controller**
+
+Ini contoh sederhana pake Laravel Controller:
+
+```php
+use Illuminate\Support\Facades\DB;
+
+public function store(StoreDataRequest $request)
+{
+    // Mulai transaksi
+    DB::beginTransaction();
+
+    try {
+        // Operasi pertama
+        $dataPertama = DataPertama::create($request->validated());
+
+        // Operasi kedua
+        $dataPertama->relasi()->create($request->validated());
+
+        // Operasi ketiga
+        $dataPertama->notifyUsers();
+    } catch (\Exception $e) {
+        // Kalo gagal, rollback data seperti sebelum melakukan operasi
+        DB::rollback();
+
+        return response()->json(['message' => 'Gagal menyimpan data'], 500);
+    }
+
+    // Kalo semua operasi sukses, commit transaksi
+    DB::commit();
+    return response()->json(['message' => 'Data berhasil disimpan'], 200);
+}
+```
+
+Dari contoh ini, kita bisa lihat. Jika ada salah satu operasi dari semua operasi yang berjalan terjadi error. Gak ada satu pun data yang masuk ke database. Jadi data yang masuk ke database itu bisa kita pastikan lengkap dan konsisten.
+
+Contoh kesalahan yang sering saya temukan itu semacam ini:
+
+```php
+use Illuminate\Support\Facades\DB;
+
+public function store(StoreDataRequest $request)
+{
+    // Operasi pertama
+    $dataPertama = DataPertama::create($request->validated());
+
+    if ($dataPertama) {
+        // Operasi kedua
+        $dataPertama->relasi()->create($request->validated());
+
+        // Operasi ketiga
+        $dataPertama->notifyUsers();
+
+        return response()->json(['message' => 'Data berhasil disimpan'], 200);
+    } else {
+        return response()->json(['message' => 'Gagal menyimpan data'], 500);
+    }
+}
+```
+
+Kalo gini, misalkan operasi kedua itu gagal atau error data dari operasi pertama itu tetap masuk ke database. Terus pas kita coba lagi, eh jadi duplikat/ganda data nya. Atau bahkan muncul error yang lain lagi misal: unique error di level database dan masih banyak lagi.
+
+Dari gambaran ini, udah bisa liat kan kalo Database Transaction emang sepenting itu. Semoga tulisan ini bermanfaat! Dah, yuk balik ngoding lagi. Kerjaan masih banyak woy wkwk

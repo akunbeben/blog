@@ -3,9 +3,9 @@ const siteMetadata = {
   title: 'Personal writing space',
   author: 'Benny Rahmat',
   headerTitle: 'Benny Rahmat',
-  description: 'Personal writing space, a place to share my thoughts.',
+  description: 'Portfolio Benny Rahmat. Personal writing space, a place to share my thoughts.',
   language: 'en-us',
-  theme: 'light', // system, dark or light
+  theme: 'system', // system, dark or light
   siteUrl: 'https://akunbeben.vercel.app',
   siteRepo: 'https://github.com/akunbeben/blog',
   siteLogo: '/static/images/logo.png',
