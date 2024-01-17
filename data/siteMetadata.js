@@ -14,7 +14,6 @@ const siteMetadata = {
   github: 'https://github.com/akunbeben',
   twitter: 'https://twitter.com/akunbeben',
   linkedin: 'https://www.linkedin.com/in/akunbeben',
-  upwork: 'https://www.upwork.com/freelancers/~018bab3e073f989ee8',
   locale: 'en-US',
   analytics: {
     // googleAnalytics: {

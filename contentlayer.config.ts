@@ -123,7 +123,6 @@ export const Authors = defineDocumentType(() => ({
     twitter: { type: 'string' },
     linkedin: { type: 'string' },
     github: { type: 'string' },
-    upwork: { type: 'string' },
     layout: { type: 'string' },
   },
   computedFields,
