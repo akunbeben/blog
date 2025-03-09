@@ -6,12 +6,6 @@ draft: false
 summary: Navigating Livewire v3 changes for debugging in Laravel using Laravel Debugbar became a puzzle. Event name shifts, method replacements, and inline view hiccups. My dive, solutions, and compatibility fix revealed! 🕵️‍♂️🚀
 ---
 
-_Author_: Benny Rahmat
-
-_Subject_: Problem solving
-
-_Language_: English
-
 _Source_: [Github Issue](https://github.com/barryvdh/laravel-debugbar/issues/1435)
 
 # Context
@@ -59,6 +53,7 @@ Livewire::listen('render', function (View $view) use ($request) {
     $this->data[$key] = $this->formatVar($data);
 });
 ```
+
 [Source code](https://github.com/barryvdh/laravel-debugbar/blob/cf4554d1dd7805a6a737dcb0f620c80d36850108/src/DataCollector/LivewireCollector.php#L26-L48)
 
 The error is appeared because the `render` method is returning an instance of [Component](https://github.com/livewire/livewire/blob/main/src/Component.php). In the previous version, it was returning the instance of `\Illuminate\Contracts\View\View`. And then getting the instance like this `$view->getData()['_instance']`, it's no longer needed in v3 because the callback itself is already return the Component object.
@@ -92,6 +87,7 @@ Livewire::listen('render', function (Component $component) use ($request) {
     $this->data[$key] = $this->formatVar($data);
 });
 ```
+
 [Source code](https://github.com/barryvdh/laravel-debugbar/blob/master/src/DataCollector/LivewireCollector.php#L51-L69)
 
 Voila ✨, it starts capturing all the Livewire http request and show the data.
