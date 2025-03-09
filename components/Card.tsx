@@ -3,11 +3,7 @@ import Link from './Link'
 
 const Card = ({ title, description, imgSrc, href }) => (
   <div className="md max-w-[544px] p-4 md:w-1/2">
-    <div
-      className={`${
-        imgSrc && 'h-full'
-      }  overflow-hidden rounded-xl border border-gray-300 border-opacity-60 dark:border-gray-700`}
-    >
+    <div className={`${imgSrc && 'h-full'} overflow-hidden rounded-md border border-gray-300 border-opacity-60 dark:border-gray-700`}>
       {imgSrc &&
         (href ? (
           <Link href={href} aria-label={`Link to ${title}`}>
@@ -28,8 +24,8 @@ const Card = ({ title, description, imgSrc, href }) => (
             height={306}
           />
         ))}
-      <div className="p-6 flex flex-col gap-2.5">
-        <h2 className="mb-3 text-2xl font-bold leading-8 tracking-tight">
+      <div className="p-6">
+        <h2 className="mb-3 text-2xl leading-8 font-bold tracking-tight">
           {href ? (
             <Link href={href} aria-label={`Link to ${title}`}>
               {title}
@@ -38,11 +34,11 @@ const Card = ({ title, description, imgSrc, href }) => (
             title
           )}
         </h2>
-        <p className="mb-3 prose text-gray-500 max-w-none dark:text-gray-400">{description}</p>
+        <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">{description}</p>
         {href && (
           <Link
             href={href}
-            className="mt-auto text-base font-medium leading-6 text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-base leading-6 font-medium"
             aria-label={`Link to ${title}`}
           >
             Learn more &rarr;

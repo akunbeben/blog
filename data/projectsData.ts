@@ -1,4 +1,35 @@
-const projectsData = [
+interface Project {
+  title: string
+  description: string
+  href?: string
+  imgSrc?: string
+}
+
+const projectsData: Project[] = [
+  {
+    title: 'Peek Code',
+    description: `A secure way to share private GitHub repositories without inviting collaborators or changing visibility.`,
+    imgSrc: '/static/images/peek-code.png',
+    href: 'https://peek.beben.space',
+  },
+  {
+    title: 'Basic Text-to-Speech',
+    description: `A simple text-to-speech implementation using Web Speech API. Built with Vite & React.`,
+    imgSrc: '/static/images/text-to-speech.png',
+    href: 'https://basic-text-to-speech.vercel.app',
+  },
+  {
+    title: 'JSON.ts',
+    description: `JSON.ts is a TypeScript tools for converting JSON from an endpoint into TypeScript types. Built with Bun`,
+    imgSrc: '/static/images/jsonts.png',
+    href: 'https://github.com/akunbeben/json.ts',
+  },
+  {
+    title: 'Nafas',
+    description: `Respiratory Rate Counter - With shareable result using a single link. Built with Vite & React`,
+    imgSrc: '/static/images/nafas.png',
+    href: 'https://nafas-kappa.vercel.app',
+  },
   {
     title: 'TableAds - tablesignage.com',
     description: `Revamped the platform. Overall, TableAds is a comprehensive environment for businesses to display any promotional material, including voucher codes, promos, or interactive banners. Revamped using Laravel, Livewire, and Filament.`,
