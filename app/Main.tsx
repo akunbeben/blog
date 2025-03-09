@@ -33,7 +33,7 @@ export default function Home({ posts }) {
                       </dd>
                     </dl>
                     <div className="space-y-5 xl:col-span-3">
-                      <div className="space-y-6">
+                      <div>
                         <div>
                           <h2 className="text-2xl leading-8 font-bold tracking-tight">
                             <Link
@@ -43,11 +43,6 @@ export default function Home({ posts }) {
                               {title}
                             </Link>
                           </h2>
-                          <div className="flex flex-wrap">
-                            {tags.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
-                          </div>
                         </div>
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">
                           {summary}
